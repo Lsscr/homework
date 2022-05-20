@@ -30,11 +30,5 @@ nav {
 import HomeView from "@/views/HomeView";
 export default {
   components: {HomeView},
-  async created() {
-    const {data : {data : res }} = await this.$http.get('goods/list')
-    // this.$store.commit('get_data',)
-    // console.log(this.$store.state.data)
-    console.log(res)
-  }
 }
 </script>

@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://202.193.53.235:8080/'
+axios.defaults.baseURL = '/admin'
 axios.defaults.timeout = 1000
 Vue.config.productionTip = false
 Vue.prototype.$http = axios

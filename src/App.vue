@@ -1,10 +1,6 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+    <HomeView></HomeView>
   </div>
 </template>
 
@@ -30,3 +26,15 @@ nav {
   }
 }
 </style>
+<script>
+import HomeView from "@/views/HomeView";
+export default {
+  components: {HomeView},
+  async created() {
+    const {data : {data : res }} = await this.$http.get('goods/list')
+    // this.$store.commit('get_data',)
+    // console.log(this.$store.state.data)
+    console.log(res)
+  }
+}
+</script>

@@ -20,14 +20,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .cart_head{
   font-size: 12px;
   border-bottom: 2px solid #ff6700;
   background: #fff;
   color: #b0b0b0;
   display: flex;
-  z-index: 20;
   height: 100px;
 }
 .cart_head figure img{
@@ -53,5 +52,8 @@ export default {
   font-size: smaller;
   margin-top: 8px;
   float: right;
+}
+span{
+  margin: 0 5px 0 5px;
 }
 </style>

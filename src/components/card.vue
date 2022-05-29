@@ -4,7 +4,7 @@
       <img :src="'http://202.193.53.235:8080/'+img_path" :alt="name">
       <div class="card-name">{{name}}</div>
       <div class="card-price">{{price}}元</div>
-      <el-button class="card-button">加入购物车</el-button>
+      <el-button class="card-button" @click="addcar">加入购物车</el-button>
     </el-card>
   </div>
 </template>
@@ -17,6 +17,19 @@ export default {
     name : null,
     price : null,
     id : null
+  },
+  methods : {
+    async addcar(){
+      //http://202.193.53.235:8080/cart/add?userId=22272b0bc3a44fde812e3a67f7b6d5dc&goodsId=034db61a861345f9bb681b7f283dd1e1&num=1&price=3499
+      //http://[ip]:[port]/cart/add?userId=[userId]&goodsId=[goodsId]&num=[num]&price=[price]
+      const {data : data} = await this.$http.post('/cart/add?userId='+this.$store.state.use.useid+'&goodsId='+this.id+'&num=1&price='+this.price)
+      this.$notify({
+        title: '成功',
+        message: '商品添加成功',
+        type: 'success'
+      });
+      this.$store.commit('get_select',data)
+    }
   }
 }
 </script>

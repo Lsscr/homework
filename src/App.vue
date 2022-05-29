@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HomeView></HomeView>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -28,7 +28,8 @@ nav {
 </style>
 <script>
 import HomeView from "@/views/HomeView";
+import GoodsView from "@/views/GoodsView";
 export default {
-  components: {HomeView},
+  components: {GoodsView, HomeView},
 }
 </script>

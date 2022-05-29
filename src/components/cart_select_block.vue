@@ -5,38 +5,38 @@
         <div class="inform">
           <h2>您的购物车还是空的!</h2>
           <p>登录后将显示您加入的商品</p>
-          <el-button id="login">登录</el-button>
-          <el-button id="shopping">加入购物车</el-button>
+          <el-button id="login" @click="$router.push({path:'/Login_Register'})">登录</el-button>
+          <el-button id="shopping" @click="$router.push({path:'/goods'})">加入购物车</el-button>
+<!--          <el-link class="button" id="login">登录</el-link>-->
+<!--          <el-link class="button" id="shopping" to="/goods">马上去购物</el-link>-->
         </div>
       </el-main>
-      <el-main v-else>
-        <el-table>
-          <el-table-column label="test"></el-table-column>
-        </el-table>
+      <el-main class="exit_goods" v-else>
+        <select-item></select-item>
       </el-main>
-      <el-footer>
-        <hr>
-        <div id="command">
-          <span>为你推荐</span>
-        </div>
-      </el-footer>
     </el-container>
   </div>
 </template>
 
 <script>
 import {mapGetters} from 'vuex'
+import SelectItem from "@/components/select-item";
 export default {
   name: "cart_select_block",
+  components: {SelectItem},
   computed:{
     ...mapGetters(['visible'])
-  }
+  },
+  methods:{
+
+  },
 }
 </script>
 
 <style scoped lang="less">
 .select_body{
   min-width: 1227px;
+  min-height: 630px;
 }
 .show_none {
   margin: 65px 0 130px;
@@ -74,20 +74,7 @@ button{
   color: #ff6700;
   border: #FF6700 solid 1px;
 }
-span{
-  line-height: 40px;
-  text-align: center;
-  display: block;
-  background-color: #f5f5f5;
-  margin: 0;
-  font-size: 30px;
-  font-weight: 400;
-  color: #757575;
-}
-#command{
-  margin-top: -30px;
-  margin-left: 512px;
-  height: 100px;
-  width: 420px;
+.exit_goods{
+  margin-top: 50px;
 }
 </style>

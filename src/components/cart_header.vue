@@ -1,22 +1,33 @@
 <template>
   <div class="cart_head">
     <figure>
-      <img src="@/assets/logo-header.png" alt="小米头顶图标">
+      <img src="@/assets/logo-header.jpg" alt="我的头顶图标">
     </figure>
     <div>
-      <h2>我的购物车</h2>
-      <nav>
-        <router-link to="#">登录</router-link>
+      <slot name="title">默认头顶插槽</slot>
+<!--      <h2>我的购物车</h2>-->
+      <nav v-if="islogin">
+        <router-link to="/Login_Register">登录</router-link>
         <span>|</span>
-        <router-link to="#">注册</router-link>
+        <router-link to="/Login_Register">注册</router-link>
+      </nav>
+      <nav v-else>
+        <span>Hi {{this.$store.state.use.usename}}</span>
+        <span>|</span>
+        <slot name="default">跳转链接插槽</slot>
+<!--        <router-link to="/">我的订单</router-link>-->
       </nav>
     </div>
   </div>
 </template>
 
 <script>
+import {mapGetters} from "vuex";
 export default {
-  name: "cart_header"
+  name: "cart_header",
+  computed:{
+    ...mapGetters(['islogin'])
+  }
 }
 </script>
 

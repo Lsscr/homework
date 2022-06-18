@@ -1,6 +1,6 @@
 <template>
   <div class="col-3 input-effect">
-    <input :class="{'has-content':value!=='','effect-19':true}" type="text" placeholder="" :value="value" @input="$emit('input',$event.target.value)">
+    <input :class="{'has-content':value!=='','effect-19':true}" :type="type" placeholder="" :value="value" @input="$emit('input',$event.target.value)">
     <label>{{placeholder}}</label>
     <span class="focus-border">
 		            	<i></i>
@@ -9,22 +9,21 @@
 </template>
 <script>
 export default {
-  name: "输入框",
+  name: "myInput",
   props:{
     value:'',
-    placeholder:''
+    placeholder:'',
+    type : '',
   }
 }
 </script>
 
 <style scoped lang="less">
-//col-3 class类用于布局，设置每一行分为3个列
 .col-3 {
 
 }
 
-//然后为input元素设置一些通用样式。
-input[type="text"] {
+input[type="text"],input[type="password"] {
   font: 15px/24px "Lato", Arial, sans-serif;
   color: #333;
   //width: 100%;
@@ -54,7 +53,6 @@ input[type="text"] {
   position: absolute;
   top: -1px;
   left: 50%;
-  //width为线的长度
   width: 0;
   height: 2px;
   background-color: #3399FF;
@@ -72,7 +70,6 @@ input[type="text"] {
   position: absolute;
   top: 50%;
   left: 0;
-  //左右两边线的粗度为2px
   width: 2px;
   height: 0;
   background-color: #3399FF;
@@ -80,7 +77,6 @@ input[type="text"] {
 }
 
 .effect-19 ~ .focus-border i:after {
-  //left要与input中的min-width-左右两边线的粗度;
   left: 268px;
   right: 0;
 }
@@ -90,7 +86,6 @@ input[type="text"] {
 .has-content.effect-19 ~ .focus-border:before,
 .has-content.effect-19 ~ .focus-border:after {
   left: 0;
-  //聚焦的的时候,边框上下两边的width长度,应该跟input的width相同
   width: 270px;
   transition: 0.4s;
   z-index:-100;
@@ -104,7 +99,6 @@ input[type="text"] {
   height: 100%;
   transition: 0.6s;
   outline:0;
-  //outline为聚焦的时候,自动取消聚焦边框
 }
 
 .effect-19 ~ label {
@@ -116,7 +110,7 @@ input[type="text"] {
   transition: 0.3s;
   z-index: -1;
   letter-spacing: 0.5px;
-  background: white;
+  background: rgb(241,252,253);
   padding: 0 12px 0 12px;
 }
 

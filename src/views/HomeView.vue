@@ -28,7 +28,7 @@ export default {
     Cart_header
   },
   async created() {
-    const {data:res} = await this.$http.get('/goods/list')
+    const res = await this.$http.get('/goods/list')
     this.$store.commit('get_data',res)
   }
 }

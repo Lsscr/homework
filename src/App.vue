@@ -31,5 +31,8 @@ import HomeView from "@/views/HomeView";
 import GoodsView from "@/views/GoodsView";
 export default {
   components: {GoodsView, HomeView},
+  mounted() {
+    // this.$store.commit('update_date')
+  }
 }
 </script>

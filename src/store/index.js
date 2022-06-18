@@ -1,18 +1,21 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {use} from "element-ui";
+import axios from 'axios'
+axios.defaults.baseURL = '/admin'
+axios.defaults.timeout = 1000
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    data : [],
-    selected : [],
-    order_list : [],
-    use : {
-      useid : '',
-      usename : ''
-    }
+      data : [],
+      selected : [],
+      order_list : [],
+      use : {
+        useid : '',
+        usename : ''
+      },
+      suer_order : []
   },
   getters: {
     visible(state) {
@@ -37,10 +40,21 @@ export default new Vuex.Store({
     },
     push_order_list(state,obj){
       state.order_list.push(obj)
+    },
+    async update_date(state){
+      const name = window.sessionStorage.getItem("name")
+      const useid = window.sessionStorage.getItem("useid")
+      state.use = {useid:useid,usename:name}
+      state.data = await axios.get("/goods/list")
+      state.selected = await axios.post("/cart/listByUser?userId="+useid)
+      state.order_list = await axios.post("/order/listByUser?userId="+useid)
+    },
+    get_sure_order(state,arr){
+      state.suer_order = arr
     }
   },
   actions: {
   },
   modules: {
-  }
+  },
 })

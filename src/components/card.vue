@@ -20,9 +20,8 @@ export default {
   },
   methods : {
     async addcar(){
-      //http://202.193.53.235:8080/cart/add?userId=22272b0bc3a44fde812e3a67f7b6d5dc&goodsId=034db61a861345f9bb681b7f283dd1e1&num=1&price=3499
-      //http://[ip]:[port]/cart/add?userId=[userId]&goodsId=[goodsId]&num=[num]&price=[price]
-      const {data : data} = await this.$http.post('/cart/add?userId='+this.$store.state.use.useid+'&goodsId='+this.id+'&num=1&price='+this.price)
+      console.log(sessionStorage.getItem("vuex"))
+      const data = await this.$http.post('/cart/add?userId='+this.$store.state.use.useid+'&goodsId='+this.id+'&num=1&price='+this.price)
       this.$notify({
         title: '成功',
         message: '商品添加成功',

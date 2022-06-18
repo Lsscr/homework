@@ -4,6 +4,7 @@
         ref="multipleTable"
         :data="this.$store.state.selected"
         tooltip-effect="dark"
+        @sort-change="sortChange"
         style="width: 100%"
         @selection-change="handleSelectionChange">
       <el-table-column
@@ -21,11 +22,13 @@
       </el-table-column>
       <el-table-column
           prop="price"
+          sortable
           width="140"
           label="单价">
       </el-table-column>
       <el-table-column
           width="310"
+          sortable
           align="center"
           label="数量">
         <template v-slot="scope">
@@ -34,6 +37,7 @@
       </el-table-column>
       <el-table-column
           width="120"
+          sortable
           label="小计">
         <template v-slot="scope">
           <label class="total-price">{{scope.row.price*scope.row.num}}元</label>
@@ -53,28 +57,65 @@
     <div class="bottom">
       <el-button @click="$router.push({path:'/goods'})" id="continue">继续购物</el-button>
       <span id="selected">已经选择<span style="color: #FF6700">{{num}}</span>件</span>
-      <el-button @click="toggleSelection()">取消选择</el-button>
-      <el-button id="submit_money" @click="submit_order">结账</el-button>
+      <el-button class="choc" @click="toggleSelection()" v-if="flag">取消选择</el-button>
+      <el-button class="choc" @click="togallSelection" v-else>全部选择</el-button>
+      <el-button id="submit_money" @click="handleClose" :disabled="!flag">结账</el-button>
       <span style="color: #FF6700;float: right;line-height: 55px;margin-right: 30px">合计:<span style="font-size: 32px;margin-left: 3px;margin-right: 3px">{{total}}</span>元</span>
     </div>
+    <el-dialog
+        title="确认订单信息"
+        :visible.sync="dialogVisible"
+        width="30%">
+      <el-table :data="select">
+        <el-table-column property="name" label="名称" width="230"></el-table-column>
+        <el-table-column property="num" label="数量" width="100"></el-table-column>
+        <el-table-column label="最终价格">
+          <template v-slot="scope">
+            {{scope.row.num*scope.row.price}}
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submit_order" :loading="loading">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import Info from "@/components/info";
 export default {
   name: "select-item",
+  components: {Info},
   data(){
     return{
       num : 0,
-      total : 0
+      total : 0,
+      dialogVisible: false,
+      select : [],
+      loading : false
     }
   },
   computed :{
+    flag(){
+      return this.num!==0
+    }
   },
   methods: {
+    handleClose() {
+      this.dialogVisible = true
+      this.select = this.$refs.multipleTable.selection
+      this.$store.commit('get_sure_order',this.select)
+    },
     handleChange(){
-      console.log(this)
       this.handleSelectionChange(this.$refs.multipleTable.selection)
+    },
+    togallSelection(){
+      const arry = this.$refs.multipleTable.tableData
+      arry.forEach(item => {
+        this.$refs.multipleTable.toggleRowSelection(item)
+      })
     },
     toggleSelection(rows) {
       if (rows) {
@@ -94,8 +135,8 @@ export default {
       },0)
     },
     async delete_item(obj){
-      ///cart/deleteById?userId=7a3ae031010a4358b500925941c6019c&cartId=29ade395dfd14162879e71ca901b389b
-      const {data : data} = await this.$http.post('cart/deleteById?userId='+obj.userId+'&cartId='+obj.cardid)
+      console.log(obj)
+      const data = await this.$http.post('cart/deleteById?userId='+obj.userId+'&cartId='+obj.cardid)
       this.$store.commit('get_select',data)
       this.$notify({
         title: '成功',
@@ -104,54 +145,47 @@ export default {
       });
     },
     async submit_order(){
-      //http://202.193.52.12:8080/order/addCastOrder?userId=[userId]&cartList=[cartList]
-      //先更新数据库中的购物车的数量
-      var arr = this.$refs.multipleTable.selection
-      // var temp = {
-      //   goodsId : '',
-      //   num : '',
-      //   price : ''
-      // }
-      // var select_id = []
-      // for (const item of arr) {
-      //   // this.$http.post('/cart/add?userId='+this.$store.state.use.useid+'&goodsId='+item.id+'&num='+item.num+'&price='+item.price)
-      //   temp = Object.assign(item)
-      //   await this.$http.post('cart/deleteById?userId='+this.$store.state.use.useid+'&cartId='+item.cardid)
-      //   let {data : d} = await this.$http.post('/cart/add?userId='+this.$store.state.use.useid+'&goodsId='+temp.goodsId+'&num='+temp.num+'&price='+temp.price)
-      //   select_id.push(item.goodsId)
-      //   this.$store.commit('get_select',d)
-      // }
-      // var Str = '/order/addCastOrder?userId='+this.$store.state.use.useid+'&cartList='
-      // arr = this.$refs.multipleTable.selection
-      // for (const item of arr) {
-      //   console.log(item.cardid)
-      //   Str += item.cardid+','
-      // }
+      this.loading = true
+      this.dialogVisible = false
+      let arr = this.$store.state.suer_order
       var Str = this.$store.state.use.useid+'&cartList='
       for (const item of arr) {
         Str += item.cardid+','
       }
       Str = Str.slice(0,-1)
-      await this.$http.post('/order/addCastOrder?userId='+Str)
-      //刷新订单数据
-      const {data :order_data} = await this.$http.post('/order/listByUser?userId='+this.$store.state.use.useid)
-      this.$store.commit('get_order',order_data)
-      const {data :select_data} = await this.$http.post('/cart/listByUser?userId='+this.$store.state.use.useid)
-      //刷新购物车数据
-      this.$store.commit('get_select',select_data)
-      this.$router.push('/order')
+      await this.$http.post('/order/addCastOrder?userId='+Str).then(async res => {
+          await this.$http.post('/order/listByUser?userId='+this.$store.state.use.useid).then(async res => {
+            this.$store.commit('get_order',res)
+            await this.$http.post('/cart/listByUser?userId='+this.$store.state.use.useid).then(res => {
+                this.$store.commit('get_select',res)
+            })
+          })
+      }).catch(err => console.log(err.message))
+          .finally(() =>{
+            this.loading = false
+            this.$router.push('/order')
+          })
+
+
     }
   }
 }
 </script>
 
 <style scoped lang="less">
+.choc{
+  float: left;
+  margin-left: 20px;
+  border: none;
+  height: 60px;
+}
 .show-goods{
   width: 1220px;
   margin-left: 120px;
+  height:100%
 }
 .show-goods /deep/ {
-  overflow: hidden;
+  //overflow: hidden;
 }
 img{
   width: 60px;
@@ -170,6 +204,8 @@ div /deep/ .cell{
   border-top:1.3px solid #FF6700;
   background: white;
   min-height: 60px;
+  position: sticky;
+  bottom: 0;
 }
 #continue{
   float: left;

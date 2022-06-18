@@ -1,23 +1,23 @@
 <template>
   <el-container>
-    <el-main>
+    <el-main id='building'>
       <div>
         <el-form ref="loginForm" :model="form" :rules="rules" label-width="80px" class="login-box">
-          <h3 class="login-title">欢迎登录</h3>
+          <img src="@/assets/logo-header.jpg" alt="我的头顶图标" id="tx">
+          <h3 class="login-title" style="display: inline-block">欢迎登录</h3>
           <el-form-item label="账号" prop="username">
 <!--            <el-input type="text" placeholder="请输入账号" v-model="form.username"/>-->
-                <myInput v-model="form.username" placeholder="请输入账号"></myInput>
+                <myInput type="text" v-model="form.username" placeholder="请输入账号"></myInput>
           </el-form-item>
           <el-form-item label="密码" prop="password">
 <!--            <el-input type="password" placeholder="请输入密码" v-model="form.password"/>-->
-            <myInput v-model="form.password" placeholder="请输入密码"></myInput>
+            <myInput type="password" v-model="form.password" placeholder="请输入密码"></myInput>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-on:click="onsubmit">登录</el-button>
+            <el-button type="primary" v-on:click="onsubmit" :loading="loading">登录</el-button>
             <el-button type="primary" v-on:click="onregion">注册</el-button>
           </el-form-item>
         </el-form>
-
         <el-dialog title="温馨提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
           <span>请输入账号和密码</span>
           <span slot="footer" class="dialog-footer">
@@ -38,6 +38,7 @@ export default {
   },
   data(){
     return{
+      useid : "",
       form : {
         username : "",
         password : ""
@@ -50,40 +51,57 @@ export default {
           {required:true,message:"密码不可为空",trigger:"blur"}
         ]
       },
-      dialogVisible : false
+      dialogVisible : false,
+      loading : false
     }
   },
   methods:{
     async onsubmit(){
-      //http://202.193.52.12:8080/cart/listByUser?userId=250f423a093f41319127a57b9bc0e5a8
-      const {data:useid} = await this.$http.post('/user/login?name='+this.form.username+'&password='+this.form.password)
-      this.$store.commit('get_useid', {useid : useid,usename :this.form.username})
-      const {data :data} = await this.$http.post('/cart/listByUser?userId='+useid)
-      this.$store.commit('get_select',data)
-      //http://202.193.52.12:8080/order/listByUser?userId=250f423a093f41319127a57b9bc0e5a8
-      const {data : arr} = await this.$http.post('/order/listByUser?userId='+useid)
-      // var temp_obj = {
-      //   id : '',
-      //   orderTime : '',
-      //   children : ''
-      // }
-      // var temp_arr = []
-      // for(const item of arr){
-      //     temp_obj.id = item.id
-      //     temp_obj.orderTime = item.orderTime
-      //     temp_obj.children = item.orderDetail
-      //     console.log(temp_arr)
-      //     temp_arr.push(temp_obj)
-      // }
-      this.$store.commit('get_order',arr)
-      this.$message({
-        message: '恭喜你，登录成功',
-        type: 'success'
-      });
+      this.loading = true
+      window.sessionStorage.setItem("name",this.form.username)
+      await this.$http.post('/user/login?name='+this.form.username+'&password='+this.form.password).then(res => {
+        this.useid = res
+        this.$store.commit('get_useid', {useid : res,usename :this.form.username})
+        window.sessionStorage.setItem("useid",res)
+        this.$notify({
+          title: "成功",
+          message: "登录成功",
+          type: "success",
+          duration : 2000,
+        });
+      }).catch(err => {
+        this.$notify({
+          title: "失败",
+          message: err.message,
+          type: "error",
+          duration : 2000,
+        });
+      })
+      await this.$http.post('/cart/listByUser?userId='+this.useid).then(res => {
+        this.$store.commit('get_select',res)
+      }).catch(err => {
+        this.$notify({
+          title: "失败",
+          message: err.message,
+          type: "error",
+          duration : 2000,
+        });
+      })
+      await this.$http.post('/order/listByUser?userId='+this.useid).then(res => {
+        this.$store.commit('get_order',res)
+      }).catch(err => {
+        this.$notify({
+          title: "失败",
+          message: err.message,
+          type: "error",
+          duration : 2000,
+        });
+      })
+      this.loading = false
       this.$router.push('/goods')
     },
     async onregion(){
-      const result = await this.$http.post('/user/register?name='+this.form.username+'&password='+this.form.password)
+      const result = await this.$http.post('/user/register?name='+this.form.username+'&password='+this.form.password).then()
       this.$message({
         message: '恭喜你，注册成功',
         type: 'success'
@@ -114,5 +132,22 @@ el-main{
 }
 .el-button--primary {
   margin-right: 40px;
+}
+img#tx{
+  float: left;
+  width: 48px;
+  height: 48px;
+  margin: -10px -50px 0 35px;
+  border-radius: 20px;
+}
+#building{
+  margin:0;
+  padding:0;
+  border:0;
+  background:url("https://img2.baidu.com/it/u=3896059421,3668345783&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=400");
+  width:100%;
+  height:100%;
+  position:fixed;
+  background-size:100% 100%;
 }
 </style>

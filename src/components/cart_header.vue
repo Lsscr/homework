@@ -5,17 +5,15 @@
     </figure>
     <div>
       <slot name="title">默认头顶插槽</slot>
-<!--      <h2>我的购物车</h2>-->
       <nav v-if="islogin">
         <router-link to="/Login_Register">登录</router-link>
         <span>|</span>
         <router-link to="/Login_Register">注册</router-link>
       </nav>
       <nav v-else>
-        <span>Hi {{this.$store.state.use.usename}}</span>
+        <span>{{this.$store.state.use.usename}}</span>
         <span>|</span>
-        <slot name="default">跳转链接插槽</slot>
-<!--        <router-link to="/">我的订单</router-link>-->
+        <span><slot name="default">跳转链接插槽</slot></span>
       </nav>
     </div>
   </div>

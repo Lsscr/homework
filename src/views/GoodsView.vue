@@ -5,7 +5,7 @@
       <template #default="scope"><router-link to="/">我的购物车</router-link></template>
     </cart_header>
     <div id="command">
-      <span>为你推荐</span>
+      <span>精品推荐</span>
     </div>
     <div style="min-width: 1270px;margin-left: 22px">
       <card v-for="item in this.$store.state.data" :key="item.id" :name="item.name" :img_path="item.pthumbnail"  :price="item.price1" :id="item.id"></card>

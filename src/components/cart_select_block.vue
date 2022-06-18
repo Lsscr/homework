@@ -4,11 +4,9 @@
       <el-main class="show_none" v-if="visible">
         <div class="inform">
           <h2>您的购物车还是空的!</h2>
-          <p>登录后将显示您加入的商品</p>
-          <el-button id="login" @click="$router.push({path:'/Login_Register'})">登录</el-button>
-          <el-button id="shopping" @click="$router.push({path:'/goods'})">加入购物车</el-button>
-<!--          <el-link class="button" id="login">登录</el-link>-->
-<!--          <el-link class="button" id="shopping" to="/goods">马上去购物</el-link>-->
+          <p v-show="islogin">登录后将显示您加入的商品</p>
+          <el-button id="login" v-show="islogin" @click="$router.push({path:'/Login_Register'})">登录</el-button>
+          <el-button id="shopping" @click="$router.push({path:'/goods'})" :class="{'logined':islogin===false}">加入购物车</el-button>
         </div>
       </el-main>
       <el-main class="exit_goods" v-else>
@@ -25,7 +23,7 @@ export default {
   name: "cart_select_block",
   components: {SelectItem},
   computed:{
-    ...mapGetters(['visible'])
+    ...mapGetters(['visible','islogin']),
   },
   methods:{
 
@@ -64,7 +62,8 @@ button{
   height: 50px;
   border-radius: 10px;
 }
-#login{
+#login,#shopping.logined{
+  margin-top: 10px;
   background: #ff6700;
   border-color: #ff6700;
   color: #fff;
